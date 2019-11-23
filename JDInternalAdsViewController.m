@@ -281,6 +281,15 @@ static NSTimeInterval timeIntervalShowAdsAgain = 60 * 10;
     [super viewDidLayoutSubviews];
     
     [UIView performWithoutAnimation:^{
+        UIEdgeInsets safeAreaInsets;
+        if (@available(iOS 11.0, *)) {
+            safeAreaInsets = UIEdgeInsetsMake(self.view.safeAreaInsets.top,
+                                              MAX(0, self.view.safeAreaInsets.left - 14),
+                                              0,
+                                              MAX(0, self.view.safeAreaInsets.right - 14));
+        } else {
+            safeAreaInsets = UIEdgeInsetsZero;
+        }
         
         CGFloat margin = 10;
         
@@ -288,9 +297,9 @@ static NSTimeInterval timeIntervalShowAdsAgain = 60 * 10;
         
         [hideButton setFrameToWidth:60];
         //    hideButton.backgroundColor = [UIColor redColor];
-        [hideButton setFrameToAlignment:JDFrameAlignmentRight];
+        [hideButton setFrameToAlignment:JDFrameAlignmentRight withInsets:safeAreaInsets];
         [hideButton setFrameToFill:JDFrameFillHeight];
-        UIEdgeInsets appInsets = UIEdgeInsetsMake(margin, margin, margin, hideButton.frameWidth);
+        UIEdgeInsets appInsets = UIEdgeInsetsMake(margin, margin + safeAreaInsets.left, margin, hideButton.frameWidth + safeAreaInsets.right);
         
         CGFloat availableWidth = self.view.frameWidth - appInsets.left - appInsets.right;
         BOOL smallScreen = availableWidth < maxWidth;
@@ -314,7 +323,6 @@ static NSTimeInterval timeIntervalShowAdsAgain = 60 * 10;
         [buyLabel setFrameToFill:JDFrameFillHeight];
         
         UIEdgeInsets labelInsets = UIEdgeInsetsMake(0, iconImageView.frameWidth + margin, 0, (!buyLabel.hidden ? buyLabel.frameWidth + margin : 0));
-        CGFloat availableLabelWidth = appContainer.frameWidth - labelInsets.left - labelInsets.right;
         
         CGFloat labelMargin = -2;
         [titleLabel setFrameToRightOfView:iconImageView withMargin:margin];
@@ -330,8 +338,7 @@ static NSTimeInterval timeIntervalShowAdsAgain = 60 * 10;
         [titleLabel setFrameToTop:labelTop];
         [subtitleLabel setFrameToBottomOfView:titleLabel withMargin:labelMargin];
         
-        [button setFrameToFill:JDFrameFillWidth | JDFrameFillHeight withInsets:UIEdgeInsetsMake(0, 0, 0, hideButton.frameWidth)];
-        
+        [button setFrameToFill:JDFrameFillWidth | JDFrameFillHeight withInsets:UIEdgeInsetsMake(0, 0, 0, hideButton.frameWidth + safeAreaInsets.right)];
     }];
 }
 
